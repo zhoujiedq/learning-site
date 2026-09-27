@@ -1,0 +1,112 @@
+import { Link, useParams } from 'react-router-dom';
+import { ArrowLeft, Download, Trash2, Languages } from 'lucide-react';
+import type { Post } from '../types';
+import { MarkdownView } from '../components/MarkdownView';
+import { downloadMarkdown, removeUpload } from '../utils/uploadStore';
+import { useI18n } from '../i18n';
+
+interface PostDetailProps {
+  posts: Post[];
+  onChange: () => void;
+}
+
+export function PostDetail({ posts, onChange }: PostDetailProps) {
+  const { t } = useI18n();
+  const { id } = useParams<{ id: string }>();
+  const post = posts.find((p) => p.id === decodeURIComponent(id ?? ''));
+
+  const listPath = (p: Post) =>
+    p.type === 'note' ? '/notes' : p.type === 'paper' ? '/papers' : '/projects';
+
+  if (!post) {
+    return (
+      <div className="py-24 text-center">
+        <p className="font-serif text-ink-500 mb-4">{t.notFound}</p>
+        <Link to="/" className="text-sm text-accent hover:underline">← {t.backHome}</Link>
+      </div>
+    );
+  }
+
+  // 中英配对文章
+  const counterpart = post.translationId
+    ? posts.find(
+        (p) =>
+          p.translationId === post.translationId &&
+          p.lang !== post.lang &&
+          p.type === post.type,
+      )
+    : undefined;
+
+  const handleDelete = () => {
+    if (confirm(t.deleteConfirm)) {
+      removeUpload(post.id);
+      onChange();
+      window.history.back();
+    }
+  };
+
+  return (
+    <article className="py-10">
+      <Link
+        to={listPath(post)}
+        className="inline-flex items-center gap-1.5 text-xs text-ink-500 tracking-wider uppercase hover:text-ink-900 mb-8"
+      >
+        <ArrowLeft className="w-4 h-4" />
+        {t.backList}
+      </Link>
+
+      {/* 元信息 */}
+      <header className="mb-8 pb-8 border-b border-ink-200">
+        <h1 className="font-serif text-3xl sm:text-4xl font-bold text-ink-900 leading-tight">
+          {post.title}
+        </h1>
+        <div className="mt-5 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-ink-500 font-serif">
+          <span>{post.date || t.noDate}</span>
+          {post.authors && <span className="italic">{post.authors}</span>}
+          {post.venue && <span>{post.venue}</span>}
+          <span className="tracking-wider uppercase text-xs">{post.lang === 'zh' ? '中文' : 'English'}</span>
+        </div>
+        {post.tags.length > 0 && (
+          <div className="mt-3 flex flex-wrap gap-x-4 text-sm text-ink-500">
+            {post.tags.map((tag) => (
+              <span key={tag}>#{tag}</span>
+            ))}
+          </div>
+        )}
+      </header>
+
+      {/* 操作栏 */}
+      <div className="flex flex-wrap items-center gap-5 mb-4">
+        <button
+          onClick={() => downloadMarkdown(post.fileName, post.raw)}
+          className="inline-flex items-center gap-2 text-sm text-ink-900 border-b border-ink-900 pb-0.5 hover:text-accent hover:border-accent transition-colors"
+        >
+          <Download className="w-4 h-4" />
+          {t.download}
+        </button>
+
+        {counterpart && (
+          <Link
+            to={`/post/${encodeURIComponent(counterpart.id)}`}
+            className="inline-flex items-center gap-2 text-sm text-ink-500 border-b border-ink-300 pb-0.5 hover:text-ink-900 hover:border-ink-900 transition-colors"
+          >
+            <Languages className="w-4 h-4" />
+            {counterpart.lang === 'en' ? 'Read in English' : '阅读中文版'}
+          </Link>
+        )}
+
+        {post.source === 'upload' && (
+          <button
+            onClick={handleDelete}
+            className="inline-flex items-center gap-2 text-sm text-ink-500 hover:text-accent transition-colors ml-auto"
+          >
+            <Trash2 className="w-4 h-4" />
+            {t.delete}
+          </button>
+        )}
+      </div>
+
+      <MarkdownView body={post.body} />
+    </article>
+  );
+}

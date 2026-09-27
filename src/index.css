@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink-50: #faf9f7;
+  --color-ink-100: #f3f2ef;
+  --color-ink-200: #e6e4df;
+  --color-ink-300: #d3d0c9;
+  --color-ink-400: #a8a49b;
+  --color-ink-500: #7d7970;
+  --color-ink-600: #5c5952;
+  --color-ink-700: #43413c;
+  --color-ink-800: #2a2926;
+  --color-ink-900: #1a1917;
+
+  --color-accent: #7a1f1f;
+
+  --font-serif: 'Source Han Serif SC', 'Noto Serif CJK SC', 'Songti SC', 'STSong', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Inter', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
+}
