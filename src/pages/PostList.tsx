@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { Search } from 'lucide-react';
 import type { Lang, Post, PostType } from '../types';
 import { PostCard } from '../components/PostCard';
 import { useI18n } from '../i18n';
@@ -15,16 +16,25 @@ export function PostList({ posts, type, title, description }: PostListProps) {
   const { t } = useI18n();
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [activeLang, setActiveLang] = useState<Lang | 'all'>('all');
+  const [query, setQuery] = useState('');
 
-  const list = useMemo(
-    () =>
-      posts
-        .filter((p) => p.type === type)
-        .filter((p) => !activeTag || p.tags.includes(activeTag))
-        .filter((p) => activeLang === 'all' || p.lang === activeLang)
-        .sort((a, b) => b.date.localeCompare(a.date)),
-    [posts, type, activeTag, activeLang],
-  );
+  const list = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return posts
+      .filter((p) => p.type === type)
+      .filter((p) => !activeTag || p.tags.includes(activeTag))
+      .filter((p) => activeLang === 'all' || p.lang === activeLang)
+      .filter((p) => {
+        if (!q) return true;
+        return (
+          p.title.toLowerCase().includes(q) ||
+          p.tags.some((x) => x.toLowerCase().includes(q)) ||
+          p.summary.toLowerCase().includes(q) ||
+          p.body.toLowerCase().includes(q)
+        );
+      })
+      .sort((a, b) => b.date.localeCompare(a.date));
+  }, [posts, type, activeTag, activeLang, query]);
 
   const allTags = useMemo(() => {
     const set = new Set<string>();
@@ -48,7 +58,18 @@ export function PostList({ posts, type, title, description }: PostListProps) {
       <h1 className="font-serif text-4xl font-bold text-ink-900">{title}</h1>
       <p className="mt-3 font-serif text-ink-600 leading-7">{description}</p>
 
-      <div className="mt-8 flex flex-wrap items-center gap-2">
+      {/* 搜索框 */}
+      <div className="mt-8 relative max-w-md">
+        <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-ink-400" />
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t.searchPlaceholder}
+          className="w-full pl-10 pr-4 py-2.5 text-sm font-sans bg-transparent border border-ink-300 text-ink-900 placeholder:text-ink-400 focus:outline-none focus:border-ink-900 transition-colors"
+        />
+      </div>
+
+      <div className="mt-4 flex flex-wrap items-center gap-2">
         {/* 语言筛选 */}
         <button onClick={() => setActiveLang('all')} className={chip(activeLang === 'all')}>
           {t.langAll}

@@ -25,6 +25,9 @@ export const en = {
   latest: 'Latest entries',
   viewAll: 'View all',
   emptyHome: 'No entries yet. Import your first Markdown file to begin.',
+  searchPlaceholder: 'Search title / tag / content…',
+  prevEntry: 'Older',
+  nextEntry: 'Newer',
   listTitles: {
     note: 'Notes',
     paper: 'Papers',
@@ -88,6 +91,9 @@ export const zh: typeof en = {
   latest: '最新动态',
   viewAll: '查看全部',
   emptyHome: '还没有内容，去「导入」上传第一篇 Markdown 吧。',
+  searchPlaceholder: '搜索标题 / 标签 / 内容…',
+  prevEntry: '更早',
+  nextEntry: '更新',
   listTitles: {
     note: '学习笔记',
     paper: '论文阅读',

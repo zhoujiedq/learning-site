@@ -17,3 +17,13 @@
   --font-serif: 'Source Han Serif SC', 'Noto Serif CJK SC', 'Songti SC', 'STSong', Georgia, 'Times New Roman', serif;
   --font-sans: 'Inter', 'PingFang SC', 'Microsoft YaHei', system-ui, sans-serif;
 }
+
+/* ===== Code highlighting (highlight.js) ===== */
+@import "highlight.js/styles/github.css";
+
+/* 让高亮代码与本站深色代码块背景协调 */
+.hljs {
+  background: transparent;
+  color: var(--color-ink-800);
+  padding: 0;
+}
