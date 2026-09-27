@@ -35,8 +35,8 @@ jobs:
       - name: Build
         run: npm run build
         env:
-          # GitHub 项目页位于子路径；绑定根域名 jadenzhou.top 时改为 '/'
-          BASE_URL: /learning-site/
+          # 已绑定根域名 jadenzhou.top，使用根路径
+          BASE_URL: /
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
